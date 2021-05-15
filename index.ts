@@ -5,8 +5,22 @@ const slackWebhookURL = process.env.SLACK_WEBHOOK_URL || "";
 const amazonSheetURL = process.env.AMAZON_SHEET_URL || "";
 const chromiumPath = process.env.CHROMIUM_PATH;
 const defaultTime = +(process.env.DEFAULT_TIME || "60");
+const cacheTime = +(process.env.CACHE_TIME || "600");
 
-const amazonListURL = async ():Promise<string[]> => {
+let amazonListCache: {
+    ttl: number;
+    data: string[];
+} = {
+    ttl: 0,
+    data: []
+};
+
+const amazonListURL = async (): Promise<string[]> => {
+    const dt = new Date();
+    const tm = dt.getTime();
+    if (amazonListCache.ttl > tm) {
+        return amazonListCache.data;
+    }
     const res = await fetch(amazonSheetURL, {
         headers: {
             accept: "application/json, text/plain, */*"
@@ -17,7 +31,12 @@ const amazonListURL = async ():Promise<string[]> => {
         method: "GET"
     });
 
-    return await res.json();
+    amazonListCache = {
+        ttl: tm+cacheTime*1000,
+        data: await res.json()
+    };
+
+    return amazonListCache.data;
 };
 
 const notification = async (result: {
