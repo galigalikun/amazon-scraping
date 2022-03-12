@@ -11,7 +11,7 @@ RUN apt-get update \
 # アプリケーションのソースをバンドルする
 COPY . .
 
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
+ENV PUPPETEER_PRODUCT chrome
 ENV CHROMIUM_PATH /usr/bin/chromium
 
 CMD [ "run", "--unstable", "--allow-net", "--allow-env", "--allow-write", "--allow-run", "index.ts"]
