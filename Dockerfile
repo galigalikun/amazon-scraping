@@ -1,4 +1,4 @@
-FROM node:14-slim
+FROM denoland/deno:1.19.2
 
 WORKDIR /app
 
@@ -14,6 +14,4 @@ COPY . .
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
 ENV CHROMIUM_PATH /usr/bin/chromium
 
-RUN yarn install
-
-CMD [ "yarn", "scraping"]
+CMD [ "run", "--unstable", "--allow-net", "--allow-env", "--allow-write", "--allow-run", "index.ts"]
